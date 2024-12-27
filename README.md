@@ -1,5 +1,8 @@
 # Log Viewer Application
 
+## V 0.8
+Single server and front end client working.
+
 ## Project Structure
 ```
 project-root/
@@ -13,6 +16,8 @@ project-root/
 │   ├── app.py
 │   ├── Dockerfile
 │   ├── requirements.txt
+│   ├── log1.log
+│   ├── log2.log
 │   └── test/
 │       └── test_app.py
 ├── .dockerignore
