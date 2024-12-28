@@ -25,16 +25,17 @@ def write_log_file(filename, log_entries):
         for entry in log_entries:
             file.write(entry + '\n')
             
-def log_generate(name):
-    num_entries = 10000
+def log_generate(name, num_entries):
     filename = "{}.log".format(name)
     log_entries = generate_log_entries(num_entries)
     write_log_file(filename, log_entries)
     print(f"Log file '{filename}' with {num_entries} entries created successfully.")
 
 def main():
-    log_generate("log1")
-    log_generate("log2")
+    log_generate("tiny", 20000)
+    log_generate("small", 200000)
+    log_generate("medium", 2000000)
+    log_generate("huge", 25000000)
 
 if __name__ == "__main__":
     main()
