@@ -9,7 +9,7 @@ function isValidKeyword(keyword) {
 async function fetchLogs() {
     const filename = document.getElementById('filename').value;
     const keyword = document.getElementById('keyword').value || '';
-    let n = document.getElementById('n').value || 100000;
+    let n = document.getElementById('n').value || 10000;
     const logContent = document.getElementById('logContent');
     logContent.innerHTML = ''; 
 
