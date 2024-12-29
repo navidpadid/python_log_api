@@ -1,7 +1,7 @@
 # Log Viewer Application
 
-## V 0.95
-Single server and front end client working.
+## V 1.00
+Single server and front end client working with stream support and acceptable performance.
 
 ![Example Usage](sample.png)
 
