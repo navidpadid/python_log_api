@@ -8,21 +8,18 @@ large_test_file_path = os.path.join(log_dir, 'large_test.log')
 
 @pytest.fixture(scope='module', autouse=True)
 def setup_and_teardown():
-    # Setup: Create the test file
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
     with open(test_file_path, 'w') as f:
         for i in range(1, 12):
             f.write(f'Line {i}\n')
 
-    # Setup: Create the large test file
     with open(large_test_file_path, 'w') as f:
         for i in range(1, 1000001):
             f.write(f'Line {i}\n')
 
     yield
 
-    # Teardown: Remove the test files
     if os.path.exists(test_file_path):
         os.remove(test_file_path)
     if os.path.exists(large_test_file_path):

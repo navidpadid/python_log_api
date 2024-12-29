@@ -6,7 +6,7 @@ function isValidKeyword(keyword) {
     return /^[\w\s-]*$/.test(keyword);
 }
 
-async function fetchLogs() {
+async function fetchLogs(page = 1, pageSize = 200) {
     const filename = document.getElementById('filename').value;
     const keyword = document.getElementById('keyword').value || '';
     let n = document.getElementById('n').value || 10000;
@@ -44,7 +44,11 @@ async function fetchLogs() {
         }
 
         const data = await response.json();
-        data.lines.forEach(line => {
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        const paginatedLines = data.lines.slice(start, end);
+
+        paginatedLines.forEach(line => {
             const logLine = document.createElement('div');
             logLine.textContent = line;
 
@@ -60,6 +64,65 @@ async function fetchLogs() {
 
             logContent.appendChild(logLine);
         });
+
+        const paginationControls = document.createElement('div');
+        paginationControls.classList.add('pagination-controls');
+
+        const totalPages = Math.ceil(data.lines.length / pageSize);
+        const maxPagesToShow = 5;
+        let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+        if (endPage - startPage < maxPagesToShow - 1) {
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+
+        if (startPage > 1) {
+            const firstPageButton = document.createElement('button');
+            firstPageButton.textContent = '1';
+            firstPageButton.onclick = () => fetchLogs(1, pageSize);
+            firstPageButton.style.color = 'cyan';
+            paginationControls.appendChild(firstPageButton);
+
+            if (startPage > 2) {
+                const dots = document.createElement('span');
+                dots.textContent = '...';
+                paginationControls.appendChild(dots);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.onclick = () => fetchLogs(i, pageSize);
+            if (i === page) {
+                pageButton.style.backgroundColor = 'darkblue';
+                pageButton.style.color = 'cyan';
+                pageButton.classList.add('active');
+            } else {
+                pageButton.style.color = 'cyan';
+            }
+            paginationControls.appendChild(pageButton);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const dots = document.createElement('span');
+                dots.textContent = '...';
+                paginationControls.appendChild(dots);
+            }
+
+            const lastPageButton = document.createElement('button');
+            lastPageButton.textContent = totalPages;
+            lastPageButton.onclick = () => fetchLogs(totalPages, pageSize);
+            lastPageButton.style.color = 'cyan';
+            paginationControls.appendChild(lastPageButton);
+        }
+
+        const paginationWrapper = document.createElement('div');
+        paginationWrapper.style.marginTop = '20px';
+        paginationWrapper.appendChild(paginationControls);
+        logContent.appendChild(paginationWrapper);
     } catch (error) {
         console.error('Error fetching logs:', error);
         logContent.textContent = `Error fetching logs: ${error.message}`;
