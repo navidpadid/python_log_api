@@ -46,14 +46,14 @@ class LogViewer:
                 buffer = cur_lines.pop(0)  # Keep the last partial line for the next read
 
                 for line in reversed(cur_lines):
-                    if self.keyword.encode() in line:
+                    if len(line) > 0 and self.keyword.encode() in line:
                         self.lines.append(line.decode().strip())
                         if len(self.lines) == self.num_lines:
                             break
 
     def get_lines(self):
         file_size = os.path.getsize(self.file_path)
-        if file_size <= 50 * 1024 * 1024:  # 50 MB
+        if file_size <= 5 * 1024 * 1024:  # 5 MB
             self.read_small_file()
         else:
             self.read_large_file()
@@ -67,6 +67,13 @@ def get_log(filename):
     keyword = request.args.get('keyword', '')
     n = request.args.get('n', '100')
 
+    if not n.isdigit():
+        return jsonify({'error': 'Number of lines must be a valid number'}), 400
+
+    n = int(n)
+    if n > 5000:
+        n = 2000
+        
     log_viewer = LogViewer(filename, keyword, int(n))
 
     if not log_viewer.is_valid_filename():
@@ -74,14 +81,6 @@ def get_log(filename):
 
     if not log_viewer.is_valid_keyword():
         return jsonify({'error': 'Invalid keyword format'}), 400
-
-    if not n.isdigit():
-        return jsonify({'error': 'Number of lines must be a valid number'}), 400
-
-    n = int(n)
-
-    if n > 5000:
-        n = 2000
 
     try:
         file_path = os.path.join('/var/log', filename)
