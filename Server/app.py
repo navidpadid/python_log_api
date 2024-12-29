@@ -71,8 +71,8 @@ def get_log(filename):
         return jsonify({'error': 'Number of lines must be a valid number'}), 400
 
     n = int(n)
-    if n > 5000:
-        n = 2000
+    if n > 100000:
+        n = 100000
         
     log_viewer = LogViewer(filename, keyword, int(n))
 
