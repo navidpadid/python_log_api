@@ -1,10 +1,12 @@
 import os
 import re
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 
 # Constants
 SMALL_FILE_SIZE_LIMIT = 5 * 1024 * 1024  # 5 MB
 BUFFER_SIZE = 500 * 1024  # 500 KB
+NUM_THREADS = 8  # Number of threads for processing
 
 class LogViewer:
     def __init__(self, filename, filepath, keyword, num_lines):
@@ -34,6 +36,20 @@ class LogViewer:
                         self.__lines.append(line)
                         cntr += 1
 
+    def __process_lines(self, lines):
+        processed_lines = deque(maxlen=self.__num_lines)
+        if self.__keyword == '':
+            processed_lines.extend(lines[-1:-(self.__num_lines+1):-1])
+        else:
+            cntr = 0
+            for line in reversed(lines):
+                if cntr == self.__num_lines:
+                    break
+                if self.__keyword in line:
+                    processed_lines.append(line)
+                    cntr += 1
+        return processed_lines
+
     def __read_large_file(self):
         with open(self.__file_path, 'rb') as file:
             file.seek(0, os.SEEK_END)
@@ -47,11 +63,11 @@ class LogViewer:
                 cur_lines = buffer.split(b'\n')
                 buffer = cur_lines.pop(0)  # Keep the last partial line for the next read
 
-                for line in reversed(cur_lines):
-                    if len(line) > 0 and self.__keyword.encode() in line:
-                        self.__lines.append(f"{line.decode().strip()}\n")
-                        if len(self.__lines) == self.__num_lines:
-                            break
+                lines = [(f"{line.decode().strip()}\n") for line in cur_lines if len(line) > 0 and self.__keyword.encode() in line]
+
+                with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+                    future = executor.submit(self.__process_lines, lines)
+                    self.__lines.extend(future.result())
 
     def __read_small_file_generator(self):
         with open(self.__file_path, 'r') as file:
