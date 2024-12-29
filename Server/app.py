@@ -4,9 +4,9 @@ from flask_cors import CORS
 from lib.log_viewer import LogViewer
 
 DEFAULT_NUM_LINES = 10000
-MAX_NUM_LINES = 100000
+MAX_NUM_LINES = 100000000
 LOG_DIR = '/var/log'
-CHUNK_SIZE = 10000
+CHUNK_SIZE = MAX_NUM_LINES // 100
 
 app = Flask(__name__)
 CORS(app)

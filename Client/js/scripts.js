@@ -31,9 +31,9 @@ async function fetchLogs(page = 1, pageSize = 200) {
         return;
     }
 
-    if (n > 100000) {
-        warnings.textContent = 'WARN from UI: 100000 is the limit for the number of lines';
-        n = 100000;
+    if (n > 100000000) {
+        warnings.textContent = 'WARN from UI: 100,000,000 is the limit for the number of lines';
+        n = 100000000;
     }
 
     const url = `http://localhost:5000/${filename}?keyword=${keyword}&n=${n}&stream=${stream}`;
