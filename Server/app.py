@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from lib.log_viewer import LogViewer
 
@@ -14,6 +14,7 @@ CORS(app)
 def get_log(filename):
     keyword = request.args.get('keyword', '')
     n = request.args.get('n', str(DEFAULT_NUM_LINES))
+    stream = request.args.get('stream', 'false').lower() == 'true'
 
     if not n.isdigit():
         return jsonify({'error': 'Number of lines must be a valid number'}), 400
@@ -30,12 +31,26 @@ def get_log(filename):
 
     if not log_viewer.is_valid_keyword():
         return jsonify({'error': 'Invalid keyword format'}), 400
+    
+    if not os.path.exists(file_path):
+        return jsonify({'error': 'File not found'}), 404
 
     try:
-        lines = log_viewer.get_lines()
-        return jsonify({'lines': lines})
-    except FileNotFoundError:
-        return jsonify({'error': 'File not found'}), 404
+        if stream:
+            def generate():
+                yield '{"lines":['
+                first = True
+                for line in log_viewer.get_lines_generator():
+                    if not first:
+                        yield ','
+                    first = False
+                    yield f'"{line.strip()}\\n"'
+                yield ']}'
+
+            return Response(generate(), content_type='application/json')
+        else:
+            lines = log_viewer.get_lines()
+            return jsonify({'lines': lines})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -48,9 +63,10 @@ def index():
             "parameters": {
                 "filename": "The name of the log file (required)",
                 "keyword": "Text/keyword to filter log lines (optional, default: any text/keyword)",
-                "n": f"Number of matching entries to return (optional, default: {DEFAULT_NUM_LINES} lines)"
+                "n": f"Number of matching entries to return (optional, default: {DEFAULT_NUM_LINES} lines)",
+                "stream": "Whether to stream the response (optional, default: false)"
             },
-            "example": f"/test.log?keyword=error&n=50"
+            "example": f"/test.log?keyword=error&n=50&stream=true"
         }
     })
 
@@ -63,9 +79,10 @@ def page_not_found(e):
             "parameters": {
                 "filename": "The name of the log file (required)",
                 "keyword": "Text/keyword to filter log lines (optional, default: any text/keyword)",
-                "n": f"Number of matching entries to return (optional, default: {DEFAULT_NUM_LINES} lines)"
+                "n": f"Number of matching entries to return (optional, default: {DEFAULT_NUM_LINES} lines)",
+                "stream": "Whether to stream the response (optional, default: false)"
             },
-            "example": f"/test.log?keyword=error&n=50"
+            "example": f"/test.log?keyword=error&n=50&stream=true"
         }
     }), 404
 
