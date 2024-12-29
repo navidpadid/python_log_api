@@ -9,7 +9,7 @@ function isValidKeyword(keyword) {
 async function fetchLogs() {
     const filename = document.getElementById('filename').value;
     const keyword = document.getElementById('keyword').value || '';
-    let n = document.getElementById('n').value || 2000;
+    let n = document.getElementById('n').value || 100000;
     const logContent = document.getElementById('logContent');
     logContent.innerHTML = ''; 
 
@@ -28,9 +28,9 @@ async function fetchLogs() {
         return;
     }
 
-    if (n > 2000) {
-        logContent.textContent = 'WARN from UI: 2000 is the limit for the number of lines';
-        n = 2000;
+    if (n > 100000) {
+        logContent.textContent = 'WARN from UI: 100000 is the limit for the number of lines';
+        n = 100000;
     }
 
     const url = `http://localhost:5000/${filename}?keyword=${keyword}&n=${n}`;
