@@ -6,6 +6,7 @@ from lib.log_viewer import LogViewer
 DEFAULT_NUM_LINES = 10000
 MAX_NUM_LINES = 100000
 LOG_DIR = '/var/log'
+CHUNK_SIZE = 10000
 
 app = Flask(__name__)
 CORS(app)
@@ -40,11 +41,17 @@ def get_log(filename):
             def generate():
                 yield '{"lines":['
                 first = True
+                chunk = []
                 for line in log_viewer.get_lines_generator():
                     if not first:
-                        yield ','
+                        chunk.append(',')
                     first = False
-                    yield f'"{line.strip()}\\n"'
+                    chunk.append(f'"{line.strip()}\\n"')
+                    if len(chunk) >= CHUNK_SIZE:
+                        yield ''.join(chunk)
+                        chunk = []
+                if chunk:
+                    yield ''.join(chunk)
                 yield ']}'
 
             return Response(generate(), content_type='application/json')
