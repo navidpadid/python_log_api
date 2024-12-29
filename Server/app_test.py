@@ -28,7 +28,7 @@ def setup_and_teardown():
 def test_get_nonexistent_log():
     response = requests.get('http://localhost:5000/nonexistent.log')
     assert response.status_code == 404
-    assert 'File not found' in response.text
+    assert response.json()['error'] == 'File not found'
 
 def test_invalid_filename():
     response = requests.get('http://localhost:5000/invalid*filename.log')
@@ -49,113 +49,117 @@ def test_invalid_number_of_lines():
 def test_get_log():
     response = requests.get('http://localhost:5000/test.log')
     assert response.status_code == 200
-    assert len(response.json()['lines']) == 11
-    assert response.json()['lines'] == [
-        'Line 11\n',
-        'Line 10\n',
-        'Line 9\n',
-        'Line 8\n',
-        'Line 7\n',
-        'Line 6\n',
-        'Line 5\n',
-        'Line 4\n',
-        'Line 3\n',
-        'Line 2\n',
-        'Line 1\n'
+    lines = response.text.strip().split('\n')
+    assert len(lines) == 11
+    assert lines == [
+        'Line 11',
+        'Line 10',
+        'Line 9',
+        'Line 8',
+        'Line 7',
+        'Line 6',
+        'Line 5',
+        'Line 4',
+        'Line 3',
+        'Line 2',
+        'Line 1'
     ]
 
 def test_get_log_stream():
     response = requests.get('http://localhost:5000/test.log?stream=true')
     assert response.status_code == 200
-    lines = response.json()['lines']
+    lines = response.text.strip().split('\n')
     assert len(lines) == 11
     assert lines == [
-        'Line 11\n',
-        'Line 10\n',
-        'Line 9\n',
-        'Line 8\n',
-        'Line 7\n',
-        'Line 6\n',
-        'Line 5\n',
-        'Line 4\n',
-        'Line 3\n',
-        'Line 2\n',
-        'Line 1\n'
+        'Line 11',
+        'Line 10',
+        'Line 9',
+        'Line 8',
+        'Line 7',
+        'Line 6',
+        'Line 5',
+        'Line 4',
+        'Line 3',
+        'Line 2',
+        'Line 1'
     ]
 
 def test_keyword_search():
     response = requests.get('http://localhost:5000/test.log?keyword=Line 1')
     assert response.status_code == 200
-    assert len(response.json()['lines']) == 3
-    assert response.json()['lines'] == ['Line 11\n', 'Line 10\n', 'Line 1\n']
+    lines = response.text.strip().split('\n')
+    assert len(lines) == 3
+    assert lines == ['Line 11', 'Line 10', 'Line 1']
 
 def test_keyword_search_stream():
     response = requests.get('http://localhost:5000/test.log?keyword=Line 1&stream=true')
     assert response.status_code == 200
-    lines = response.json()['lines']
+    lines = response.text.strip().split('\n')
     assert len(lines) == 3
-    assert lines == ['Line 11\n', 'Line 10\n', 'Line 1\n']
+    assert lines == ['Line 11', 'Line 10', 'Line 1']
 
 def test_number_of_matches():
     response = requests.get('http://localhost:5000/test.log?n=5')
     assert response.status_code == 200
-    assert len(response.json()['lines']) == 5
-    assert response.json()['lines'] == [
-        'Line 11\n',
-        'Line 10\n',
-        'Line 9\n',
-        'Line 8\n',
-        'Line 7\n'
+    lines = response.text.strip().split('\n')
+    assert len(lines) == 5
+    assert lines == [
+        'Line 11',
+        'Line 10',
+        'Line 9',
+        'Line 8',
+        'Line 7'
     ]
 
 def test_number_of_matches_stream():
     response = requests.get('http://localhost:5000/test.log?n=5&stream=true')
     assert response.status_code == 200
-    lines = response.json()['lines']
+    lines = response.text.strip().split('\n')
     assert len(lines) == 5
     assert lines == [
-        'Line 11\n',
-        'Line 10\n',
-        'Line 9\n',
-        'Line 8\n',
-        'Line 7\n'
+        'Line 11',
+        'Line 10',
+        'Line 9',
+        'Line 8',
+        'Line 7'
     ]
 
 def test_keyword_and_number_of_matches():
     response = requests.get('http://localhost:5000/test.log?keyword=Line&n=5')
     assert response.status_code == 200
-    assert len(response.json()['lines']) == 5
-    print(response.json()['lines'])
-    assert response.json()['lines'] == [
-        'Line 11\n',
-        'Line 10\n',
-        'Line 9\n',
-        'Line 8\n',
-        'Line 7\n'
+    lines = response.text.strip().split('\n')
+    assert len(lines) == 5
+    assert lines == [
+        'Line 11',
+        'Line 10',
+        'Line 9',
+        'Line 8',
+        'Line 7'
     ]
 
 def test_keyword_and_number_of_matches_stream():
     response = requests.get('http://localhost:5000/test.log?keyword=Line&n=5&stream=true')
     assert response.status_code == 200
-    lines = response.json()['lines']
+    lines = response.text.strip().split('\n')
     assert len(lines) == 5
     assert lines == [
-        'Line 11\n',
-        'Line 10\n',
-        'Line 9\n',
-        'Line 8\n',
-        'Line 7\n'
+        'Line 11',
+        'Line 10',
+        'Line 9',
+        'Line 8',
+        'Line 7'
     ]
 
 def test_read_large_file():
     response = requests.get('http://localhost:5000/large_test.log?n=1000')
     assert response.status_code == 200
-    assert len(response.json()['lines']) == 1000
-    assert response.json()['lines'] == [f'Line {i}' for i in range(1000000, 999000, -1)]
+    lines = response.text.strip().split('\n')
+    assert len(lines) == 1000
+    assert lines == [f'Line {i}' for i in range(1000000, 999000, -1)]
 
 def test_read_large_file_stream():
     response = requests.get('http://localhost:5000/large_test.log?n=1000&stream=true')
     assert response.status_code == 200
-    lines = response.json()['lines']
+    lines = response.text.strip().split('\n')
     assert len(lines) == 1000
-    assert lines == [f'Line {i}\n' for i in range(1000000, 999000, -1)]
+    assert lines == [f'Line {i}' for i in range(1000000, 999000, -1)]

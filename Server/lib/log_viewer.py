@@ -49,7 +49,7 @@ class LogViewer:
 
                 for line in reversed(cur_lines):
                     if len(line) > 0 and self.__keyword.encode() in line:
-                        self.__lines.append(line.decode().strip())
+                        self.__lines.append(f"{line.decode().strip()}\n")
                         if len(self.__lines) == self.__num_lines:
                             break
 

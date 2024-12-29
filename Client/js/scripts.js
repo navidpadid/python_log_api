@@ -33,9 +33,9 @@ async function fetchLogs(page = 1, pageSize = 200) {
         return;
     }
 
-    if (n > 100000000) {
-        warnings.textContent = 'WARN from UI: 100,000,000 is the limit for the number of lines';
-        n = 100000000;
+    if (n > 10000000) {
+        warnings.textContent = 'WARN from UI: 10,000,000 is the limit for the number of lines';
+        n = 10000000;
     }
 
     const url = `http://localhost:5000/${filename}?keyword=${keyword}&n=${n}&stream=${stream}`;
@@ -48,8 +48,8 @@ async function fetchLogs(page = 1, pageSize = 200) {
             return;
         }
 
-        const data = await response.json();
-        loadedData = data.lines;
+        const data = await response.text();
+        loadedData = data.split('\n').filter(line => line.trim() !== '');
         displayLogs(page, pageSize);
     } catch (error) {
         console.error('Error fetching logs:', error);

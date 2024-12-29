@@ -4,7 +4,7 @@ from flask_cors import CORS
 from lib.log_viewer import LogViewer
 
 DEFAULT_NUM_LINES = 10000
-MAX_NUM_LINES = 100000000
+MAX_NUM_LINES = 10000000
 LOG_DIR = '/var/log'
 CHUNK_SIZE = MAX_NUM_LINES // 100
 
@@ -39,25 +39,18 @@ def get_log(filename):
     try:
         if stream:
             def generate():
-                yield '{"lines":['
-                first = True
                 chunk = []
                 for line in log_viewer.get_lines_generator():
-                    if not first:
-                        chunk.append(',')
-                    first = False
-                    chunk.append(f'"{line.strip()}\\n"')
+                    chunk.append(f"{line.strip()}\n")
                     if len(chunk) >= CHUNK_SIZE:
                         yield ''.join(chunk)
                         chunk = []
                 if chunk:
                     yield ''.join(chunk)
-                yield ']}'
-
-            return Response(generate(), content_type='application/json')
+            return Response(generate(), content_type='text/plain')
         else:
             lines = log_viewer.get_lines()
-            return jsonify({'lines': lines})
+            return Response(''.join(lines), content_type='text/plain')
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
