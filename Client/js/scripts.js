@@ -10,36 +10,39 @@ async function fetchLogs(page = 1, pageSize = 200) {
     const filename = document.getElementById('filename').value;
     const keyword = document.getElementById('keyword').value || '';
     let n = document.getElementById('n').value || 10000;
+    const stream = document.getElementById('stream').value;
     const logContent = document.getElementById('logContent');
+    const warnings = document.getElementById('warnings');
     logContent.innerHTML = ''; 
+    warnings.innerHTML = '';
 
     if (!isValidFilename(filename)) {
-        logContent.textContent = 'Error from UI: Invalid filename format';
+        warnings.textContent = 'Error from UI: Invalid filename format';
         return;
     }
 
     if (!isValidKeyword(keyword)) {
-        logContent.textContent = 'Error from UI: Invalid keyword format';
+        warnings.textContent = 'Error from UI: Invalid keyword format';
         return;
     }
 
     if (isNaN(n) || n <= 0) {
-        logContent.textContent = 'Error from UI: Number of lines must be a valid number';
+        warnings.textContent = 'Error from UI: Number of lines must be a valid number';
         return;
     }
 
-    if (n > 100000) {
-        logContent.textContent = 'WARN from UI: 100000 is the limit for the number of lines';
-        n = 100000;
+    if (n > 100000000) {
+        warnings.textContent = 'WARN from UI: 100,000,000 is the limit for the number of lines';
+        n = 100000000;
     }
 
-    const url = `http://localhost:5000/${filename}?keyword=${keyword}&n=${n}`;
+    const url = `http://localhost:5000/${filename}?keyword=${keyword}&n=${n}&stream=${stream}`;
     try {
         const response = await fetch(url);
 
         if (!response.ok) {
             const errorData = await response.json();
-            logContent.textContent = `Error: ${errorData.error}`;
+            warnings.textContent = `Error: ${errorData.error}`;
             return;
         }
 
@@ -125,6 +128,6 @@ async function fetchLogs(page = 1, pageSize = 200) {
         logContent.appendChild(paginationWrapper);
     } catch (error) {
         console.error('Error fetching logs:', error);
-        logContent.textContent = `Error fetching logs: ${error.message}`;
+        warnings.textContent = `Error fetching logs: ${error.message}`;
     }
 }

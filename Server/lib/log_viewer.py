@@ -53,6 +53,42 @@ class LogViewer:
                         if len(self.__lines) == self.__num_lines:
                             break
 
+    def __read_small_file_generator(self):
+        with open(self.__file_path, 'r') as file:
+            read_lines = file.readlines()
+            if self.__keyword == '':
+                for line in read_lines[-1:-(self.__num_lines+1):-1]:
+                    yield line
+            else:
+                cntr = 0
+                for line in reversed(read_lines):
+                    if cntr == self.__num_lines:
+                        break
+                    if self.__keyword in line:
+                        yield line
+                        cntr += 1
+
+    def __read_large_file_generator(self):
+        with open(self.__file_path, 'rb') as file:
+            file.seek(0, os.SEEK_END)
+            buffer = b''
+            position = file.tell()
+            cntr = 0
+
+            while position > 0 and cntr < self.__num_lines:
+                position = max(0, position - BUFFER_SIZE)
+                file.seek(position)
+                buffer = file.read(BUFFER_SIZE) + buffer
+                cur_lines = buffer.split(b'\n')
+                buffer = cur_lines.pop(0)  # Keep the last partial line for the next read
+
+                for line in reversed(cur_lines):
+                    if len(line) > 0 and self.__keyword.encode() in line:
+                        yield line.decode().strip()
+                        cntr += 1
+                        if cntr == self.__num_lines:
+                            break
+
     def get_lines(self):
         file_size = os.path.getsize(self.__file_path)
         if file_size <= SMALL_FILE_SIZE_LIMIT:
@@ -60,3 +96,10 @@ class LogViewer:
         else:
             self.__read_large_file()
         return list(self.__lines)
+
+    def get_lines_generator(self):
+        file_size = os.path.getsize(self.__file_path)
+        if file_size <= SMALL_FILE_SIZE_LIMIT:
+            return self.__read_small_file_generator()
+        else:
+            return self.__read_large_file_generator()

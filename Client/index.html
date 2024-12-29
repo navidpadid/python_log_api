@@ -13,12 +13,18 @@
             <input type="text" id="filename" placeholder="Enter log filename" required>
             <input type="text" id="keyword" placeholder="Enter keyword (optional)">
             <input type="number" id="n" placeholder="Enter number of lines (optional)">
+            <label for="stream">Stream:</label>
+            <select id="stream">
+                <option value="false">False</option>
+                <option value="true">True</option>
+            </select>
             <button onclick="fetchLogs()">View Logs</button>
         </div>
         <h2>Log Results</h2>
         <div class="log-box">
             <pre id="logContent"></pre>
         </div>
+        <div id="warnings" class="warnings"></div>
     </div>
     <script src="js/scripts.js"></script>
 </body>

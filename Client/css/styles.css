@@ -85,3 +85,9 @@ pre {
 .log-warn {
     color: #d39e00;
 }
+
+.warnings {
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+}
