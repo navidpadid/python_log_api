@@ -6,4 +6,4 @@ EXPOSE 5000
 COPY log_generator.py ./
 RUN python log_generator.py
 RUN mv *.log /var/log
-CMD ["python", "app.py"]
+CMD ["python", "app.py", "&"]
