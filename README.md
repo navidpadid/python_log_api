@@ -1,11 +1,30 @@
 # Log Viewer Application
 
-## V 1.00
+## V 1.1
 Single server and front end client working with stream support and acceptable performance.
+
+### Pre-requisite
+- Have docker installed on the host.
+
+- Commands tested on Ubuntu 24.04
+
+### How to run:
+1) Run the servers as containers:
+```bash
+cd Server
+bash run.sh
+```
+
+2) Open the client application located at:
+```
+Client/index.html
+```
+
+3) Example input and output:
 
 ![Example Usage](sample.png)
 
-## Project Structure
+### Project Structure
 ```
 Client
 │
