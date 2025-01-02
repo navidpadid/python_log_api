@@ -1,5 +1,15 @@
 let loadedData = [];
 
+function isValidIP(ip) {
+    const ipPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    return ipPattern.test(ip);
+}
+
+function isValidPort(port) {
+    const portNumber = parseInt(port, 10);
+    return portNumber >= 1 && portNumber <= 65535;
+}
+
 function isValidFilename(filename) {
     return /^[\w,\s-]+\.[A-Za-z]{3}$/.test(filename);
 }
@@ -9,6 +19,8 @@ function isValidKeyword(keyword) {
 }
 
 async function fetchLogs(page = 1, pageSize = 200) {
+    const ip = document.getElementById('ip').value;
+    const port = document.getElementById('port').value;
     const filename = document.getElementById('filename').value;
     const keyword = document.getElementById('keyword').value || '';
     let n = document.getElementById('n').value || 10000;
@@ -17,6 +29,16 @@ async function fetchLogs(page = 1, pageSize = 200) {
     const warnings = document.getElementById('warnings');
     logContent.innerHTML = ''; 
     warnings.innerHTML = '';
+
+    if (!isValidIP(ip)) {
+        warnings.textContent = 'Error from UI: Invalid IP address format';
+        return;
+    }
+
+    if (!isValidPort(port)) {
+        warnings.textContent = 'Error from UI: Invalid port number';
+        return;
+    }
 
     if (!isValidFilename(filename)) {
         warnings.textContent = 'Error from UI: Invalid filename format';
@@ -33,12 +55,12 @@ async function fetchLogs(page = 1, pageSize = 200) {
         return;
     }
 
-    if (n > 10000000) {
-        warnings.textContent = 'WARN from UI: 10,000,000 is the limit for the number of lines';
-        n = 10000000;
+    if (n > 100000000) {
+        warnings.textContent = 'WARN from UI: 100,000,000 is the limit for the number of lines';
+        n = 100000000;
     }
 
-    const url = `http://localhost:5000/${filename}?keyword=${keyword}&n=${n}&stream=${stream}`;
+    const url = `http://${ip}:${port}/${filename}?keyword=${keyword}&n=${n}&stream=${stream}`;
     try {
         const response = await fetch(url);
 
