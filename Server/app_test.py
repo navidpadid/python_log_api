@@ -1,6 +1,8 @@
 import requests
 import os
 import pytest
+import threading
+import time
 
 log_dir = '/var/log'
 test_file_path = os.path.join(log_dir, 'test.log')
@@ -24,6 +26,14 @@ def setup_and_teardown():
         os.remove(test_file_path)
     if os.path.exists(large_test_file_path):
         os.remove(large_test_file_path)
+
+def append_logs(file_path, stop_event):
+    with open(file_path, 'a') as f:
+        i = 1
+        while not stop_event.is_set():
+            time.sleep(0.0001)
+            f.write(f'Appended Line {i}\n')
+            i += 1
 
 def test_get_nonexistent_log():
     response = requests.get('http://localhost:5000/nonexistent.log')
@@ -163,3 +173,19 @@ def test_read_large_file_stream():
     lines = response.text.strip().split('\n')
     assert len(lines) == 1000
     assert lines == [f'Line {i}' for i in range(1000000, 999000, -1)]
+
+
+def test_read_large_file_stream_append():
+    stop_event = threading.Event()
+    append_thread = threading.Thread(target=append_logs, args=(large_test_file_path, stop_event))
+    append_thread.start()
+
+    try:
+        response = requests.get('http://localhost:5000/large_test.log?n=1000&stream=true')
+        assert response.status_code == 200
+        lines = response.text.strip().split('\n')
+        assert len(lines) == 1000
+        assert lines == [f'Line {i}' for i in range(1000000, 999000, -1)]
+    finally:
+        stop_event.set()
+        append_thread.join()
