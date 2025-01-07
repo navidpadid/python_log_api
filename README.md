@@ -6,23 +6,23 @@ Single server and front end client working with stream support and acceptable pe
 ### Pre-requisite
 - Have docker installed on the host.
 
-- Commands tested on Ubuntu 24.04
+- Tested host: Ubuntu 24.04, Docker 27.4.1
 
 ### How to run:
-1) Run the servers as containers:
+1) Build and start the log servers as containers:
 ```bash
-cd Server
+cd Server 
 bash run.sh
 ```
 
-2) Open the client application located at:
+2) Open the client application to query log servers located at:
 ```
 Client/index.html
 ```
 
 3) Example input and output:
 
-![Example Usage](sample.png)
+![Example Usage](Docs/sample.png)
 
 ### Project Structure
 ```
@@ -42,6 +42,10 @@ Server
 │   ├── __init__.py
 │   └── log_viewer.py
 │
+├── Docs
+|   ├── doc.pdf
+|   └── sample.png
+|
 ├── app_test.py
 ├── app.py
 ├── Dockerfile
