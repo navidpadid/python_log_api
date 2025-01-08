@@ -14,12 +14,30 @@ TIME_INCREMENT = timedelta(minutes=1)
 
 class LogGenerator:
     def __init__(self, log_levels, messages, start_time, time_increment):
+        """
+        Initialize the LogGenerator instance.
+
+        Args:
+        - log_levels (list): List of log levels.
+        - messages (dict): Dictionary of messages for each log level.
+        - start_time (datetime): The start time for log entries.
+        - time_increment (timedelta): The time increment between log entries.
+        """
         self.__log_levels = log_levels
         self.__messages = messages
         self.__current_time = start_time
         self.__time_increment = time_increment
 
     def __generate_log_entries(self, num_entries):
+        """
+        Generate log entries.
+
+        Args:
+            num_entries (int): Number of log entries to generate.
+
+        Returns:
+            list: List of generated log entries.
+        """
         log_entries = []
         for _ in range(num_entries):
             log_level = random.choice(self.__log_levels)
@@ -30,11 +48,25 @@ class LogGenerator:
         return log_entries
 
     def __write_log_file(self, filename, log_entries):
+        """
+        Write log entries to a file.
+
+        Args:
+            filename (str): The name of the log file.
+            log_entries (list): List of log entries to write.
+        """
         with open(filename, 'w') as file:
             for entry in log_entries:
                 file.write(entry + '\n')
 
     def log_generate(self, name, num_entries):
+        """
+        Generate and write log entries to a file.
+
+        Args:
+        - name (str): The base name of the log file.
+        - num_entries (int): Number of log entries to generate.
+        """
         filename = f"{name}.log"
         log_entries = self.__generate_log_entries(num_entries)
         self.__write_log_file(filename, log_entries)
