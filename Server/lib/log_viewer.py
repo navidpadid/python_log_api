@@ -4,7 +4,10 @@ from collections import deque
 
 # Constants
 SMALL_FILE_SIZE_LIMIT = 5 * 1024 * 1024  # 5 MB
+""" SMALL_FILE_SIZE_LIMIT (5MB default) is the size to determine if file is small enough to load into memory """
 BUFFER_SIZE = 500 * 1024  # 500 KB
+""" BUFFER_SIZE (500KB default) is the size """
+
 
 class LogViewer:
     def __init__(self, filename, filepath, keyword, num_lines):
@@ -12,10 +15,10 @@ class LogViewer:
         Initialize the LogViewer instance.
 
         Args:
-            filename (str): The name of the log file.
-            filepath (str): The path to the log file.
-            keyword (str): The keyword to filter log lines.
-            num_lines (int): The number of log lines to retrieve.
+        - filename (str): The name of the log file.
+        - filepath (str): The path to the log file.
+        - keyword (str): The keyword to filter log lines.
+        - num_lines (int): The number of log lines to retrieve.
         """
         self.__file_name = filename
         self.__file_path = filepath
@@ -28,7 +31,7 @@ class LogViewer:
         Check if the filename is valid.
 
         Returns:
-            bool: True if the filename is valid, False otherwise.
+        - bool: True if the filename is valid, False otherwise.
         """
         return re.match(r'^[\w,\s-]+\.[A-Za-z]{3}$', self.__file_name) is not None
 
@@ -37,7 +40,7 @@ class LogViewer:
         Check if the keyword is valid.
 
         Returns:
-            bool: True if the keyword is valid, False otherwise.
+        - bool: True if the keyword is valid, False otherwise.
         """
         return re.match(r'^[\w\s-]*$', self.__keyword) is not None
 
@@ -63,7 +66,7 @@ class LogViewer:
         Generator (used for streaming) to read a small log file and filter lines based on the keyword.
 
         Yields:
-            str: The filtered log lines.
+        - str: The filtered log lines.
         """
         with open(self.__file_path, 'r') as file:
             read_lines = file.readlines()
@@ -108,7 +111,7 @@ class LogViewer:
         Generator (used for streaming) to read a large log file (load chunks into memory) and filter lines based on the keyword.
 
         Yields:
-            str: The filtered log lines.
+        - str: The filtered log lines.
         """
         with open(self.__file_path, 'rb') as file:
             file.seek(0, os.SEEK_END)
@@ -135,7 +138,7 @@ class LogViewer:
         Get the filtered log lines.
 
         Returns:
-            list: The filtered log lines.
+        - list: The filtered log lines.
         """
         file_size = os.path.getsize(self.__file_path)
         if file_size <= SMALL_FILE_SIZE_LIMIT:
@@ -149,7 +152,7 @@ class LogViewer:
         Get the filtered log lines as a generator.
 
         Returns:
-            generator: The filtered log lines.
+        - generator: The filtered log lines.
         """
         file_size = os.path.getsize(self.__file_path)
         if file_size <= SMALL_FILE_SIZE_LIMIT:

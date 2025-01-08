@@ -41,8 +41,8 @@ def append_logs(file_path, stop_event):
     Function to append logs to a file until a stop event is set.
     
     Arguments:
-    file_path (str): Path to the log file.
-    stop_event (threading.Event): Event to signal when to stop appending logs.
+    - file_path (str): Path to the log file.
+    - stop_event (threading.Event): Event to signal when to stop appending logs.
     
     Steps:
     1. Open the log file in append mode.

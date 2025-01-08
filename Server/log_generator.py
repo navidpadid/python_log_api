@@ -18,10 +18,10 @@ class LogGenerator:
         Initialize the LogGenerator instance.
 
         Args:
-            log_levels (list): List of log levels.
-            messages (dict): Dictionary of messages for each log level.
-            start_time (datetime): The start time for log entries.
-            time_increment (timedelta): The time increment between log entries.
+        - log_levels (list): List of log levels.
+        - messages (dict): Dictionary of messages for each log level.
+        - start_time (datetime): The start time for log entries.
+        - time_increment (timedelta): The time increment between log entries.
         """
         self.__log_levels = log_levels
         self.__messages = messages
@@ -64,8 +64,8 @@ class LogGenerator:
         Generate and write log entries to a file.
 
         Args:
-            name (str): The base name of the log file.
-            num_entries (int): Number of log entries to generate.
+        - name (str): The base name of the log file.
+        - num_entries (int): Number of log entries to generate.
         """
         filename = f"{name}.log"
         log_entries = self.__generate_log_entries(num_entries)
