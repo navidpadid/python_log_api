@@ -145,7 +145,7 @@ class LogViewer:
             self.__read_small_file()
         else:
             self.__read_large_file()
-        return list(self.__lines)
+        return self.__lines
 
     def get_lines_generator(self):
         """
