@@ -13,6 +13,15 @@ CORS(app)
 
 @app.route('/<filename>', methods=['GET'])
 def get_log(filename):
+    """
+    Retrieve log file content with optional keyword filtering, line limit, and can return the content as a streaming response if requested.
+
+    Args:
+        filename (str): The name of the log file.
+
+    Returns:
+        Response: The log file content or an error message.
+    """
     keyword = request.args.get('keyword', '')
     n = request.args.get('n', str(DEFAULT_NUM_LINES))
     stream = request.args.get('stream', 'false').lower() == 'true'
@@ -56,6 +65,12 @@ def get_log(filename):
 
 @app.route('/')
 def index():
+    """
+    Display a welcome message and usage instructions for the Log Viewer API.
+
+    Returns:
+        Response: A JSON response with a welcome message and usage instructions.
+    """
     return jsonify({
         "message": "Welcome to the Log Viewer API!",
         "usage": {
@@ -72,6 +87,15 @@ def index():
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """
+    Handle 404 errors by displaying a welcome message and usage instructions.
+
+    Args:
+        e (Exception): The exception that triggered the error handler.
+
+    Returns:
+        Response: A JSON response with a welcome message and usage instructions.
+    """
     return jsonify({
         "message": "Welcome to the Log Viewer API!",
         "usage": {

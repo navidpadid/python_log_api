@@ -1,23 +1,53 @@
 let loadedData = [];
 
+/**
+ * Validate an IP address.
+ *
+ * @param {string} ip - The IP address to validate.
+ * @returns {boolean} - True if the IP address is valid, false otherwise.
+ */
 function isValidIP(ip) {
     const ipPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     return ipPattern.test(ip);
 }
 
+/**
+ * Validate a port number.
+ *
+ * @param {string} port - The port number to validate.
+ * @returns {boolean} - True if the port number is valid, false otherwise.
+ */
 function isValidPort(port) {
     const portNumber = parseInt(port, 10);
     return portNumber >= 1 && portNumber <= 65535;
 }
 
+/**
+ * Validate a filename.
+ *
+ * @param {string} filename - The filename to validate.
+ * @returns {boolean} - True if the filename is valid, false otherwise.
+ */
 function isValidFilename(filename) {
     return /^[\w,\s-]+\.[A-Za-z]{3}$/.test(filename);
 }
 
+/**
+ * Validate a keyword.
+ *
+ * @param {string} keyword - The keyword to validate.
+ * @returns {boolean} - True if the keyword is valid, false otherwise.
+ */
 function isValidKeyword(keyword) {
     return /^[\w\s-]*$/.test(keyword);
 }
 
+/**
+ * Fetch logs from the server and display them.
+ *
+ * @param {number} [page=1] - The page number to display.
+ * @param {number} [pageSize=200] - The number of log entries per page.
+ */
 async function fetchLogs(page = 1, pageSize = 200) {
     const ip = document.getElementById('ip').value;
     const port = document.getElementById('port').value;
@@ -79,6 +109,12 @@ async function fetchLogs(page = 1, pageSize = 200) {
     }
 }
 
+/**
+ * Display logs with pagination.
+ *
+ * @param {number} page - The page number to display.
+ * @param {number} pageSize - The number of log entries per page.
+ */
 function displayLogs(page, pageSize) {
     const logContent = document.getElementById('logContent');
     logContent.innerHTML = ''; 

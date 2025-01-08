@@ -26,6 +26,10 @@ Client/index.html
 
 ### Project Structure
 ```
+Docs
+├── doc.pdf
+├── sample.png
+│
 Client
 │
 ├── css
@@ -41,10 +45,6 @@ Server
 ├── lib
 │   ├── __init__.py
 │   └── log_viewer.py
-│
-├── Docs
-|   ├── doc.pdf
-|   └── sample.png
 |
 ├── app_test.py
 ├── app.py
