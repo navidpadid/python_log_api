@@ -4,10 +4,14 @@ A REST API microservice for recieving and responding to a user request for gathe
 ## V 1.1
 Multiple server(s) and GUI front-end client working with stream support and acceptable performance. This file presents overview, structure, pre-requisite, usage, test, etc. 
 
+## Documentation
+
+Please refer to the `Docs/doc.pdf` along side this README.md file.
+
 ## High-level Design
 <img src="Docs/LogServer_API.jpg" alt="Example Usage" width="1000"/>
 
-### Work Flow:
+### Workflow:
 
 1. User Interaction: The process begins with an actor (user) who can interact with the system through either a GUI or CURL. Both the GUI and CURL require the user to input the IP/PORT and log file for the log server (required). Optional parameters include a keyword, the number of lines, and streaming.
 2. HTTP Request: The GUI or CURL sends an HTTP GET request to a microservice REST API endpoint, running in a Docker container.
@@ -160,4 +164,20 @@ app_test.py::test_read_large_file_stream PASSED                                 
 app_test.py::test_read_large_file_stream_append PASSED                                                         [100%]
 
 ================================================= 15 passed in 0.47s =================================================
+```
+
+### Non-functional test
+
+To test the speed and network usage, you may use curl **on the host**:
+
+```bash
+curl "http://localhost:5001/huge.log?&keyword=ERROR&n=1000000&stream=true" | wc -l
+```
+
+Sample output:
+```bash
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 46.7M  100 46.7M    0     0  19.6M      0  0:00:02  0:00:02 --:--:-- 19.6M
+1000000
 ```
